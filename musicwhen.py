@@ -71,12 +71,12 @@ def draw():
   x1, x2, y1, y2 = plt.axis()
   plt.axis((0, 23, y1, y2))
   
-  plt.show()
+  plt.savefig('music-hours.png', format='png')
 
 def main(filename):
   parseTracks(filename)
   draw()
-  
+
 if __name__ == '__main__':
   parser = OptionParser()
   filename = get_options(parser)
