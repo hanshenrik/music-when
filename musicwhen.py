@@ -23,10 +23,11 @@ Usage: musicwhen.py -i FILENAME (of file created by lastexport.py)
 
 __version__ = '0.0.1'
 
-from optparse import OptionParser
 import sys
+import lastexport
 import matplotlib.pyplot as plt
-import datetime
+from optparse import OptionParser
+from datetime import datetime
 
 hours = range(24)
 scrobblesPerHour = [0] * 24
@@ -35,49 +36,53 @@ barColor = '#bb0000'
 
 def get_options(parser):
   """ Define command line options."""
-  parser.add_option("-i", "--input", dest="filename", default=None,
-    help="Input file created by lastexport.py.")
+  parser.add_option("-u", "--username", dest="username", default=None,
+    help="last.fm username.")
 
   options, args = parser.parse_args()
 
-  if not options.filename:
-    sys.exit("Input file not specified, see --help")
+  if not options.username:
+    sys.exit("Username not specified, see --help")
 
-  return options.filename
+  return options.username
 
 def parseTracks(filename):
   global scrobblesPerHour
   global totalScrobbles
 
-  with open(filename, 'r') as f:
+  with open('{}.txt'.format(filename), 'r') as f:
     for line in f:
       # Get the UNIX timestamp of each scrobbled track
       timestamp = int(line.split()[0])
 
-      hour = int(datetime.datetime.fromtimestamp(timestamp).strftime('%H'))
+      hour = int(datetime.fromtimestamp(timestamp).strftime('%H'))
 
       scrobblesPerHour[hour] += 1
       totalScrobbles += 1
 
-def draw():
-  plt.title('Music when?')
+def draw(username):
+  plt.title("{}'s listening pattern".format(username))
   plt.xlabel('Hour of day')
   plt.ylabel('# of scrobbles')
   plt.grid(True)
-  plt.text(1, 4500, 'Total scrobbles: %d' % totalScrobbles, bbox={'facecolor': '#bb0000', 'alpha': 0.7, 'pad': 10})
+  
   plt.bar(hours, scrobblesPerHour, color=barColor)
 
-  # Set the x-axis range from 0 to 23, keep the y-axis as is
   x1, x2, y1, y2 = plt.axis()
-  plt.axis((0, 23, y1, y2))
-  
-  plt.savefig('music-hours.png', format='png')
+  plt.text(1, 0.9*y2, 'Total scrobbles: %d' % totalScrobbles,
+    bbox={'facecolor': '#bb0000', 'alpha': 0.7, 'pad': 10})
 
-def main(filename):
-  parseTracks(filename)
-  draw()
+  # Set the x-axis range from 0 to 23, keep the y-axis as is
+  plt.axis((0, 23, y1, y2))
+
+  plt.savefig('{}.png'.format(username), format='png')
+
+def main(username):
+  parseTracks(username)
+  draw(username)
 
 if __name__ == '__main__':
   parser = OptionParser()
-  filename = get_options(parser)
-  main(filename)
+  username = get_options(parser)
+  lastexport.main(username)
+  main(username)
