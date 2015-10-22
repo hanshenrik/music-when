@@ -23,6 +23,7 @@ Usage: musicwhen.py -i FILENAME (of file created by lastexport.py)
 
 __version__ = '0.0.1'
 
+import os
 import sys
 import lastexport
 import matplotlib.pyplot as plt
@@ -33,6 +34,8 @@ hours = range(24)
 scrobblesPerHour = [0] * 24
 totalScrobbles = 0
 barColor = '#bb0000'
+imgPath = 'img'
+dataPath = 'data'
 
 def get_options(parser):
   """ Define command line options."""
@@ -50,7 +53,9 @@ def parse_tracks(filename):
   global scrobblesPerHour
   global totalScrobbles
 
-  with open('{}.txt'.format(filename), 'r') as f:
+  filename = '{}.txt'.format(filename)
+
+  with open(os.path.join(dataPath, filename), 'r') as f:
     for line in f:
       # Get the UNIX timestamp of each scrobbled track
       timestamp = int(line.split()[0])
@@ -75,7 +80,16 @@ def draw(username):
   # Set the x-axis range from 0 to 23, keep the y-axis as is
   plt.axis((0, 23, y1, y2))
 
-  plt.savefig('{}.png'.format(username), format='png')
+  save_as_image(username)
+
+def save_as_image(filename):
+  filename = '{}.png'.format(filename)
+
+  if not os.path.exists(imgPath):
+    os.makedirs(imgPath)
+
+  plt.savefig(os.path.join(imgPath, filename), format='png')
+  print "Saved figure to {}".format(imgPath, os.path.join(imgPath, filename))
 
 def main(username):
   parse_tracks(username)
@@ -84,5 +98,5 @@ def main(username):
 if __name__ == '__main__':
   parser = OptionParser()
   username = get_options(parser)
-  lastexport.main(username)
+  lastexport.main(username, dataPath=dataPath)
   main(username)
