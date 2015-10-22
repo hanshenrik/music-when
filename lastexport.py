@@ -20,7 +20,7 @@ Script for exporting tracks through the last.fm API.
 Usage: lastexport.py -u USERNAME [-p STARTPAGE]
 """
 
-import urllib2, urllib, sys, time, re
+import urllib2, urllib, sys, time, re, math
 import xml.etree.ElementTree as ET
 from optparse import OptionParser
 
@@ -119,6 +119,7 @@ def get_tracks(username, startpage=1, sleep_func=time.sleep):
     page = startpage
     response = connect_server(username, page, sleep_func)
     totalpages = get_pageinfo(response)
+    print 'Fetching {} pages with tracks...'.format(totalpages)
 
     if startpage > totalpages:
         raise ValueError("First page ({}) is higher than total pages ({}).".format(startpage, totalpages))
@@ -140,6 +141,12 @@ def get_tracks(username, startpage=1, sleep_func=time.sleep):
         page += 1
         sleep_func(0.3)
 
+def update_progress(progress):
+    temp = '[ {}'.format('#'*(progress/10)).ljust(10)
+    sys.stdout.write('\r{} ] {}%'.format(temp, progress))
+    if progress == 100:
+        sys.stdout.write('\n')
+
 def main(username, startpage=1):
     trackdict = dict()
     page = startpage  # for case of exception
@@ -148,9 +155,12 @@ def main(username, startpage=1):
     n = 0
     try:
         for page, totalpages, tracks in get_tracks(username, startpage):
-            print "Page {}/{} retrieved".format(page, totalpages)
+            update_progress(100*page/totalpages)
+            # sys.stdout.write("Page {}/{} retrieved // \r{}%".format(page, totalpages, (page/totalpages)*100))
             for track in tracks:
                 trackdict.setdefault(track[0], track)
+
+            sys.stdout.flush()
     except ValueError, e:
         exit(e)
     except Exception:
