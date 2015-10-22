@@ -2,13 +2,14 @@
 A simple python script to figure out which hours of the day you listen to music the most.
 
 # Usage
-´´´
+```
 python musicwhen.py -u USERNAME
-´´´
+```
 where USERNAME is your last.fm username.
 
 # Output
 Running musicwhen.py will create 2 files:
+
 1. A text file data/USERNAME.txt with all tracks scrobbled by this user, including time of scrobble
 2. An image file img/USERNAME.png that shows the listening pattern as number of scrobbles per hour of the day
 
