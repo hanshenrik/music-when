@@ -16,6 +16,7 @@
 #
 
 """
+This is a modified version of this script: https://gist.github.com/bitmorse/5201491
 Script for exporting tracks through the last.fm API.
 Usage: lastexport.py -u USERNAME [-p STARTPAGE]
 """
