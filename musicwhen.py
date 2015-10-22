@@ -46,7 +46,7 @@ def get_options(parser):
 
   return options.username
 
-def parseTracks(filename):
+def parse_tracks(filename):
   global scrobblesPerHour
   global totalScrobbles
 
@@ -78,7 +78,7 @@ def draw(username):
   plt.savefig('{}.png'.format(username), format='png')
 
 def main(username):
-  parseTracks(username)
+  parse_tracks(username)
   draw(username)
 
 if __name__ == '__main__':
