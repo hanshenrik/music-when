@@ -20,7 +20,7 @@ Script for exporting tracks through the last.fm API.
 Usage: lastexport.py -u USERNAME [-p STARTPAGE]
 """
 
-import urllib2, urllib, sys, time, re, math
+import urllib2, urllib, sys, time, re, math, os
 import xml.etree.ElementTree as ET
 from optparse import OptionParser
 
@@ -147,12 +147,14 @@ def update_progress(progress):
     if progress == 100:
         sys.stdout.write('\n')
 
-def main(username, startpage=1):
+def main(username, startpage=1, dataPath='data'):
     trackdict = dict()
     page = startpage  # for case of exception
-    outfile = '{}.txt'.format(username)
     totalpages = -1  # ditto
     n = 0
+
+    outfile = '{}.txt'.format(username)
+
     try:
         for page, totalpages, tracks in get_tracks(username, startpage):
             update_progress(100*page/totalpages)
@@ -166,10 +168,13 @@ def main(username, startpage=1):
     except Exception:
         raise
     finally:
-        with open(outfile, 'a') as outfileobj:
+        if not os.path.exists(dataPath):
+            os.makedirs(dataPath)
+
+        with open(os.path.join(dataPath, outfile), 'a') as outfileobj:
             tracks = sorted(trackdict.values(), reverse=True)
             write_tracks(tracks, outfileobj)
-            print "Wrote page {}-{} of {} to file {}".format(startpage, page, totalpages, outfile)
+            print "Wrote page {}-{} of {} to {}".format(startpage, page, totalpages, os.path.join(dataPath, outfile))
 
 if __name__ == "__main__":
     parser = OptionParser()
