@@ -89,7 +89,7 @@ def save_as_image(filename):
     os.makedirs(imgPath)
 
   plt.savefig(os.path.join(imgPath, filename), format='png')
-  print "Saved figure to {}".format(imgPath, os.path.join(imgPath, filename))
+  print "Saved figure to {}".format(os.path.join(imgPath, filename))
 
 def main(username):
   parse_tracks(username)
