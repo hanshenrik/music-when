@@ -18,7 +18,7 @@
 """
 Script for parsing the exported tracks file created by lastexport.py in order
 to figure out which hours of the day you listen to music the most.
-Usage: musicwhen.py -i FILENAME (of file created by lastexport.py)
+Usage: musicwhen.py -u USERNAME (of last.fm user)
 """
 
 __version__ = '0.0.1'
@@ -40,7 +40,7 @@ dataPath = 'data'
 def get_options(parser):
   """ Define command line options."""
   parser.add_option("-u", "--username", dest="username", default=None,
-    help="last.fm username.")
+    help="Username of the last.fm user.")
 
   options, args = parser.parse_args()
 
