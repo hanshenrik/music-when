@@ -65,7 +65,7 @@ def connect_server(username, startpage, sleep_func=time.sleep):
     response = f.read()
     f.close()
 
-    #bad hack to fix bad xml
+    # Bad hack to fix bad xml
     response = re.sub('\xef\xbf\xbe', '', response)
     return response
 
@@ -84,7 +84,7 @@ def get_tracklist(response):
 def parse_track(track):
     """Extract info from every track entry and output to list."""
     if track.find('artist').getchildren():
-        #artist info is nested in loved/banned tracks xml
+        # Artist info is nested in loved/banned tracks xml
         artistname = track.find('artist').find('name').text
         artistmbid = track.find('artist').find('mbid').text
     else:
@@ -92,7 +92,7 @@ def parse_track(track):
         artistmbid = track.find('artist').get('mbid')
 
     if track.find('album') is None:
-        #no album info for loved/banned tracks
+        # No album info for loved/banned tracks
         albumname = ''
         albummbid = ''
     else:
@@ -126,8 +126,7 @@ def get_tracks(username, startpage=1, sleep_func=time.sleep):
         raise ValueError("First page ({}) is higher than total pages ({}).".format(startpage, totalpages))
 
     while page <= totalpages:
-        #Skip connect if on first page, already have that one stored.
-
+        # Skip connect if on first page, already have that one stored.
         if page > startpage:
             response =  connect_server(username, page, sleep_func)
 
@@ -135,7 +134,9 @@ def get_tracks(username, startpage=1, sleep_func=time.sleep):
     
         tracks = []
         for track in tracklist:
-            tracks.append(parse_track(track))
+            # Don't export the currently playing track as it doesn't have date
+            if not track.attrib.has_key("nowplaying") or not track.attrib["nowplaying"]:
+                tracks.append(parse_track(track))
 
         yield page, totalpages, tracks
 
@@ -150,8 +151,8 @@ def update_progress(progress):
 
 def main(username, startpage=1, dataPath='data'):
     trackdict = dict()
-    page = startpage  # for case of exception
-    totalpages = -1  # ditto
+    page = startpage  # For case of exception
+    totalpages = -1  # Ditto
     n = 0
 
     outfile = '{}.txt'.format(username)
@@ -159,7 +160,6 @@ def main(username, startpage=1, dataPath='data'):
     try:
         for page, totalpages, tracks in get_tracks(username, startpage):
             update_progress(100*page/totalpages)
-            # sys.stdout.write("Page {}/{} retrieved // \r{}%".format(page, totalpages, (page/totalpages)*100))
             for track in tracks:
                 trackdict.setdefault(track[0], track)
 
