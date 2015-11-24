@@ -172,7 +172,7 @@ def main(username, startpage=1, dataPath='data'):
         if not os.path.exists(dataPath):
             os.makedirs(dataPath)
 
-        with open(os.path.join(dataPath, outfile), 'a') as outfileobj:
+        with open(os.path.join(dataPath, outfile), 'w') as outfileobj:
             tracks = sorted(trackdict.values(), reverse=True)
             write_tracks(tracks, outfileobj)
             print "Wrote page {}-{} of {} to {}".format(startpage, page, totalpages, os.path.join(dataPath, outfile))
