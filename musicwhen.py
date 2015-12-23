@@ -91,12 +91,26 @@ def save_as_image(filename):
   plt.savefig(os.path.join(imgPath, filename), format='png')
   print "Saved figure to {}".format(os.path.join(imgPath, filename))
 
+def get_time_of_latest_scrobble(username):
+  filename = '{}.txt'.format(username)
+  filepath = os.path.join(dataPath, filename)
+
+  if not os.path.exists(filepath):
+    return 0
+
+  with file(filepath, 'r') as f:
+    line = f.readline()
+  
+  timestamp = int(line.split()[0])
+  return timestamp
+
 def main(username):
+  starttime = get_time_of_latest_scrobble(username)
+  lastexport.main(username=username, starttime=starttime, dataPath=dataPath)
   parse_tracks(username)
   draw(username)
 
 if __name__ == '__main__':
   parser = OptionParser()
   username = get_options(parser)
-  lastexport.main(username, dataPath=dataPath)
   main(username)
