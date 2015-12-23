@@ -33,16 +33,20 @@ def get_options(parser):
     help="last.fm username.")
   parser.add_option("-p", "--startpage", dest="startpage", default=1,
     help="Startpage (default = 1).")
+  parser.add_option("-t", "--starttime", dest="starttime", default=0,
+    help="Only fetch scrobbles after this UNIX timestamp (default = 0).")
 
   options, args = parser.parse_args()
 
   if not options.username:
     sys.exit("Username not specified, see --help")
 
-  return options.username, options.startpage
+  return options.username, options.starttime, options.startpage
 
-def connect_server(username, startpage, sleep_func=time.sleep):
-    baseurl = 'http://ws.audioscrobbler.com/2.0/?'
+def connect_server(username, starttime=0, startpage=1, sleep_func=time.sleep):
+    # Put from parameter directly in string, since 'from' is a keyword in
+    # Python, and using it as variable name in dictionary doesn't work
+    baseurl = 'http://ws.audioscrobbler.com/2.0/?from={}&'.format(starttime)
     urlvars = dict( method='user.getrecenttracks',
                     api_key='e38cc7822bd7476fe4083e36ee69748e',
                     user=username,
@@ -116,9 +120,9 @@ def write_tracks(tracks, outfileobj):
     for fields in tracks:
         outfileobj.write(("\t".join(fields) + "\n").encode('utf-8'))
 
-def get_tracks(username, startpage=1, sleep_func=time.sleep):
+def get_tracks(username, starttime, startpage, sleep_func=time.sleep):
     page = startpage
-    response = connect_server(username, page, sleep_func)
+    response = connect_server(username, starttime, page, sleep_func)
     totalpages = get_pageinfo(response)
     print 'Fetching {} pages with tracks...'.format(totalpages)
 
@@ -128,7 +132,7 @@ def get_tracks(username, startpage=1, sleep_func=time.sleep):
     while page <= totalpages:
         # Skip connect if on first page, already have that one stored.
         if page > startpage:
-            response =  connect_server(username, page, sleep_func)
+            response =  connect_server(username, starttime, page, sleep_func)
 
         tracklist = get_tracklist(response)
     
@@ -149,7 +153,7 @@ def update_progress(progress):
     if progress == 100:
         sys.stdout.write('\n')
 
-def main(username, startpage=1, dataPath='data'):
+def main(username, starttime=0, startpage=1, dataPath='data'):
     trackdict = dict()
     page = startpage  # For case of exception
     totalpages = -1  # Ditto
@@ -158,7 +162,7 @@ def main(username, startpage=1, dataPath='data'):
     outfile = '{}.txt'.format(username)
 
     try:
-        for page, totalpages, tracks in get_tracks(username, startpage):
+        for page, totalpages, tracks in get_tracks(username, starttime, startpage):
             update_progress(100*page/totalpages)
             for track in tracks:
                 trackdict.setdefault(track[0], track)
@@ -179,5 +183,5 @@ def main(username, startpage=1, dataPath='data'):
 
 if __name__ == "__main__":
     parser = OptionParser()
-    username, startpage = get_options(parser)
-    main(username, startpage)
+    username, starttime, startpage = get_options(parser)
+    main(username, starttime, startpage)
