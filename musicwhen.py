@@ -47,7 +47,7 @@ def get_options(parser):
   if not options.username:
     sys.exit("Username not specified, see --help")
 
-  return options.username
+  return options.username.lower()
 
 def parse_tracks(filename):
   global scrobblesPerHour
@@ -99,10 +99,11 @@ def get_time_of_latest_scrobble(username):
     return 0
 
   with file(filepath, 'r') as f:
-    line = f.readline()
+    # Last line is newline, read last with text
+    lastLine = f.readlines()[-2]
   
-  timestamp = int(line.split()[0])
-  return timestamp
+  lastScrobbleTimestamp = int(lastLine.split()[0])
+  return lastScrobbleTimestamp + 30
 
 def main(username):
   starttime = get_time_of_latest_scrobble(username)
