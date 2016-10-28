@@ -148,7 +148,7 @@ def get_tracks(username, starttime, startpage, sleep_func=time.sleep):
         sleep_func(0.3)
 
 def update_progress(progress):
-    temp = '[ {}'.format('#'*(progress/10)).ljust(10)
+    temp = '[ {}'.format('#'*(progress)).ljust(100)
     sys.stdout.write('\r{} ] {}%'.format(temp, progress))
     if progress == 100:
         sys.stdout.write('\n')
