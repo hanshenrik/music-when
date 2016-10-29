@@ -33,7 +33,8 @@ from datetime import datetime
 hours = range(24)
 scrobblesPerHour = [0] * 24
 totalScrobbles = 0
-barColor = '#bb0000'
+barColor = '#a2e877'
+barColorDark = '#83c15d'
 imgPath = 'img'
 dataPath = 'data'
 
@@ -71,11 +72,11 @@ def draw(username):
   plt.ylabel('# of scrobbles')
   plt.grid(True)
   
-  plt.bar(hours, scrobblesPerHour, color=barColor)
+  plt.bar(hours, scrobblesPerHour, color=barColor, edgecolor=barColorDark, linewidth=1)
 
   x1, x2, y1, y2 = plt.axis()
   plt.text(1, 0.9*y2, 'Total scrobbles: %d' % totalScrobbles,
-    bbox={'facecolor': '#bb0000', 'alpha': 0.7, 'pad': 10})
+    bbox={'facecolor': barColor, 'edgecolor': barColorDark, 'pad': 10})
 
   # Set the x-axis range from 0 to 23, keep the y-axis as is
   plt.axis((0, 23, y1, y2))
