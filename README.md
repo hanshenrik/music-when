@@ -1,6 +1,8 @@
 # Music. When?
 A simple Python script that figures out which hours of the day you listen to music the most.
 
+![Listening Pattern Example Image](https://raw.githubusercontent.com/hanshenrik/music-when/master/img/shenrik.png)
+
 # Usage
 
 ```
