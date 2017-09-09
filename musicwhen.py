@@ -67,6 +67,7 @@ def parse_tracks(filename):
       totalScrobbles += 1
 
 def draw(username):
+  # plt.xkcd()
   plt.title("{}'s listening pattern".format(username))
   plt.xlabel('Hour of day')
   plt.ylabel('# of scrobbles')
